@@ -1,0 +1,7 @@
+# SITE_ADDRESS is set in .env:
+#   ":80"                         -> plain HTTP on the server IP
+#   "hms.example.com, www.hms..." -> automatic HTTPS via Let's Encrypt
+{$SITE_ADDRESS} {
+	encode gzip
+	reverse_proxy frontend:80
+}
