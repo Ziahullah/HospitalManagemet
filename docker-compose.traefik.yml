@@ -1,0 +1,33 @@
+# Override for servers that already run Traefik on ports 80/443
+# (e.g. Hostinger's n8n VPS template). Enable it on the server via .env:
+#   COMPOSE_FILE=docker-compose.yml:docker-compose.traefik.yml
+#   TRAEFIK_NETWORK=n8n_default
+#   HMS_HOST=hms.srvXXXX.hstgr.cloud
+#   HMS_DOMAIN=example.com
+services:
+  caddy:
+    profiles: ["disabled"]   # Traefik handles HTTP/HTTPS instead
+
+  frontend:
+    networks: [default, traefik]
+    labels:
+      - traefik.enable=true
+      - traefik.docker.network=${TRAEFIK_NETWORK}
+      - traefik.http.services.hms.loadbalancer.server.port=80
+      # Hostinger hostname (works immediately)
+      - traefik.http.routers.hms.rule=Host(`${HMS_HOST}`)
+      - traefik.http.routers.hms.entrypoints=websecure
+      - traefik.http.routers.hms.tls=true
+      - traefik.http.routers.hms.tls.certresolver=mytlschallenge
+      - traefik.http.routers.hms.service=hms
+      # Custom domain (works once its DNS A record points to this server)
+      - traefik.http.routers.hms-domain.rule=Host(`${HMS_DOMAIN}`) || Host(`www.${HMS_DOMAIN}`)
+      - traefik.http.routers.hms-domain.entrypoints=websecure
+      - traefik.http.routers.hms-domain.tls=true
+      - traefik.http.routers.hms-domain.tls.certresolver=mytlschallenge
+      - traefik.http.routers.hms-domain.service=hms
+
+networks:
+  traefik:
+    external: true
+    name: ${TRAEFIK_NETWORK}
