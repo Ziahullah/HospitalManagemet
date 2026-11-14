@@ -6,6 +6,10 @@
 set -euo pipefail
 cd "$(dirname "$0")"
 
+# Whole script lives in main() so bash parses it fully before running;
+# otherwise "git pull" below could rewrite this file while it executes.
+main() {
+
 log() { printf '\n\033[1;32m==> %s\033[0m\n' "$*"; }
 DOMAIN="${1:-}"
 
@@ -81,3 +85,7 @@ done
 echo "App did not become healthy. Recent logs:" >&2
 docker compose logs --tail=50 backend frontend caddy >&2
 exit 1
+}
+
+main "$@"
+exit $?
