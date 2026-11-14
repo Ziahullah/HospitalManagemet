@@ -69,7 +69,7 @@ docker image prune -f >/dev/null
 # 5. Health check (from inside the Docker network, independent of DNS/HTTPS)
 log "Waiting for the app to come up"
 for _ in $(seq 1 45); do
-  if docker compose exec -T frontend wget -qO- http://localhost/health >/dev/null 2>&1; then
+  if docker compose exec -T frontend wget -qO- http://127.0.0.1/health >/dev/null 2>&1; then
     URL="$(grep '^PUBLIC_URL=' .env | cut -d= -f2-)"
     docker compose ps
     log "Deployed! Open ${URL}   (API docs: ${URL}/docs)"
