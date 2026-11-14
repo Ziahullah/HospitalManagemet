@@ -18,7 +18,7 @@ services:
     build: ./backend
     restart: unless-stopped
     environment:
-      DATABASE_URL: postgresql://${DB_USER}:${DB_PASSWORD}@db:5432/${DB_NAME}
+      DATABASE_URL: postgresql+psycopg2://${DB_USER}:${DB_PASSWORD}@db:5432/${DB_NAME}
       SECRET_KEY: ${SECRET_KEY}
       FRONTEND_URL: ${PUBLIC_URL}
       BACKEND_URL: ${PUBLIC_URL}
